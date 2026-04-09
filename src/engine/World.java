@@ -27,20 +27,26 @@ public abstract class World extends Pane{
 	private boolean heightSet;
 	
 	
-	public void World() {
+	public World() {
 		timer = new AnimationTimer() {
 			long past = -1;
 			@Override
 			public void handle(long now) {
-				if(past == -1) {
-					past = now;
-				}else if(now-past>=1e9){
+				//if(now-past>=1e9){
 					act(now);
+					int size = getChildren().size();
 					for(int i = 0;i<getChildren().size();i++) {
+						if(size!=getChildren().size()) {
+							i--;
+							size = getChildren().size();
+						}
 						Actor actor = (Actor)(getChildren().get(i));
-						actor.act(now);
+						if(actor!=null) {
+							actor.act(now);
+						}
 					}
-				}	
+					//System.out.println("heer\n");
+				//}	
 			}
 		};
 		timerRunning = false;
@@ -102,12 +108,13 @@ public abstract class World extends Pane{
 	}
 	
 	public boolean isStopped() {
-		return timerRunning;
+		return !timerRunning;
 	}
 	
 	public void add(Actor actor) {
 		//actor.addedToWorld();
 		this.getChildren().add(actor);
+		actor.addedToWorld();
 	}
 	
 	public void remove(Actor actor) {
@@ -115,7 +122,6 @@ public abstract class World extends Pane{
 		for(int i = 0;i<children.size();i++) {
 			if(children.get(i).equals(actor)) {
 				children.remove(i);
-				return;
 			}
 		}
 	}
@@ -132,13 +138,16 @@ public abstract class World extends Pane{
 	}
 	
 	public <A extends Actor> java.util.List<A> getObjectsAt(double x, double y, java.lang.Class<A> cls){
+		
 		List<A> actors = new ArrayList<>();
 		ObservableList<Node> children = this.getChildren();
 		for(int i = 0;i<children.size();i++) {
 			Actor child = (Actor)(children.get(i));
 			Bounds bound = child.getBoundsInParent();
 			if(bound.contains(x, y)) {
-				actors.add(cls.cast(child));
+				try {
+					actors.add(cls.cast(child));
+				}catch(Exception e) {}
 			}
 		}
 		return actors;

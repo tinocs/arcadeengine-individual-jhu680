@@ -35,8 +35,6 @@ public class TestWorld extends World {
 	private ArrayList<CounterCoin> counterCoins = new ArrayList<>();
 
 	public TestWorld() {
-		super();
-		
 		setPrefSize(500, 300);
 	}
 

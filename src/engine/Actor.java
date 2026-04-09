@@ -18,7 +18,7 @@ public abstract class Actor extends ImageView{
 	
 	public void move(double dx, double dy) {
 		this.setX(this.getX()+dx);
-		this.setY(this.getY()+dx);
+		this.setY(this.getY()+dy);
 	}
 	
 	public World getWorld() {
