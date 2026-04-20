@@ -92,7 +92,12 @@ public abstract class World extends Pane{
 			
 		});
 		
-		this.setOnKeyPressed(e->keysPressed.add(e.getCode()));
+		this.setOnKeyPressed(e-> {
+			if(keysPressed.indexOf(e.getCode())==-1) {
+				keysPressed.add(e.getCode());
+			}
+			
+		});
 		this.setOnKeyReleased(e -> keysPressed.remove(e.getCode()));
 	
 	}
