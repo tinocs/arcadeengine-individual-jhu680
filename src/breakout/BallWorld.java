@@ -15,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 
 public class BallWorld extends World{
 	private Paddle paddle;
+	private Score score;
 	
 	public BallWorld() {
 		setPrefSize(500, 500);
@@ -31,6 +32,17 @@ public class BallWorld extends World{
 		paddle.move(this.getWidth()/2, this.getHeight()*4/5);
 		add(paddle);
 		
+		for(int i = 0;i<5;i++) {
+			Brick brick = new Brick();
+			brick.move(this.getWidth()/2-brick.getWidth()*5+brick.getWidth()*i, this.getHeight()*2/3);
+			add(brick);
+		}
+		
+		score = new Score();
+		score.setX(this.getWidth()/2-score.getBoundsInParent().getWidth()/2);
+		score.setY(score.getBoundsInParent().getHeight());
+		getChildren().add(score);
+		
 		setOnMouseMoved(new EventHandler<MouseEvent>() {
 
 			@Override
@@ -45,6 +57,10 @@ public class BallWorld extends World{
 		start();
 	}
 
+	public Score getScore() {
+		return score;
+	}
+	
 	@Override
 	public void act(long now) {
 		// TODO Auto-generated method stub

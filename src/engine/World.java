@@ -40,10 +40,12 @@ public abstract class World extends Pane{
 							i--;
 							size = getChildren().size();
 						}
-						Actor actor = (Actor)(getChildren().get(i));
-						if(actor!=null) {
-							actor.act(now);
-						}
+						try {
+							Node actor = getChildren().get(i);
+							if(actor instanceof  Actor) {
+								((Actor)actor).act(now);
+							}
+						}catch(Exception e) {}
 					}
 					//System.out.println("heer\n");
 				//}	
@@ -147,13 +149,17 @@ public abstract class World extends Pane{
 		List<A> actors = new ArrayList<>();
 		ObservableList<Node> children = this.getChildren();
 		for(int i = 0;i<children.size();i++) {
-			Actor child = (Actor)(children.get(i));
-			Bounds bound = child.getBoundsInParent();
-			if(bound.contains(x, y)) {
-				try {
-					actors.add(cls.cast(child));
-				}catch(Exception e) {}
+			Node c = (children.get(i));
+			if(c instanceof Actor) {
+				Actor child = (Actor)(c);
+				Bounds bound = child.getBoundsInParent();
+				if(bound.contains(x, y)) {
+					try {
+						actors.add(cls.cast(child));
+					}catch(Exception e) {}
+				}
 			}
+			
 		}
 		return actors;
 	}
