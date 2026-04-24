@@ -5,6 +5,9 @@
  */
 
 package breakout;
+import java.io.File;
+import java.io.FileNotFoundException;
+
 import engine.World;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -16,10 +19,19 @@ import javafx.scene.input.MouseEvent;
 public class BallWorld extends World{
 	private Paddle paddle;
 	private Score score;
+	private int level;
+	private Level levelWorld;
 	
 	public BallWorld() {
-		setPrefSize(500, 500);
+		setPrefSize(640, 400);
 	}
+	
+	public BallWorld(int level) {
+		this();
+		this.level = level;
+		levelWorld = new Level(this, level);
+	}
+	
 	
 	@Override
 	public void onDimensionsInitialized() {
@@ -32,11 +44,15 @@ public class BallWorld extends World{
 		paddle.move(this.getWidth()/2, this.getHeight()*4/5);
 		add(paddle);
 		
-		for(int i = 0;i<5;i++) {
+		try {
+			levelWorld.load(new File("level1.txt"), this);
+		} catch (Exception e) { System.out.println("jerer");}
+		
+		/*for(int i = 0;i<5;i++) {
 			Brick brick = new Brick();
 			brick.move(this.getWidth()/2-brick.getWidth()*5+brick.getWidth()*i, this.getHeight()*2/3);
 			add(brick);
-		}
+		}*/
 		
 		score = new Score();
 		score.setX(this.getWidth()/2-score.getBoundsInParent().getWidth()/2);
@@ -51,7 +67,7 @@ public class BallWorld extends World{
 			}
 		
 		});
-		
+		System.out.println();
 		
 		
 		start();

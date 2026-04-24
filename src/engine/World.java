@@ -143,6 +143,7 @@ public abstract class World extends Pane{
 		}
 		return actors;
 	}
+
 	
 	public <A extends Actor> java.util.List<A> getObjectsAt(double x, double y, java.lang.Class<A> cls){
 		
