@@ -1,34 +1,34 @@
 /* Name: Jethro Hu
- * Date: Apr 20, 2026
+ * Date: Apr 26, 2026
  * Period: 1
  * Does it work: yes
  */
 
 package breakout;
 
-
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-public class Score extends Text{
-	private int scoreVal;
+public class Lives extends Text{
+	
+	private int livesVal;
 
-	public Score() {
-		scoreVal = 0;
+	public Lives() {
+		livesVal = 0;
 		setFont(new Font(getFont().getSize()*3/2));
 		updateDisplay();
 	}
 	
 	public void updateDisplay() {
-		setText("Score: "+ scoreVal);
+		setText("Lives: "+livesVal);
 	}
 	
-	public int getScoreVal() {
-		return scoreVal;
+	public int getLivesVal() {
+		return livesVal;
 	}
 
-	public void setScoreVal(int scoreVal) {
-		this.scoreVal = scoreVal;
+	public void setLivesVal(int livesVal) {
+		this.livesVal = livesVal;
 		updateDisplay();
 	}
 }

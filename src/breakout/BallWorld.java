@@ -11,8 +11,13 @@ import java.io.FileNotFoundException;
 import engine.World;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
@@ -24,6 +29,12 @@ public class BallWorld extends World{
 	private Level levelWorld;
 	private Stage stage;
 	private Breakout breakout;
+	private Ball ball;
+	private Lives lives;
+	private boolean win;
+	private boolean isPaused;
+	private int livesNum;
+	private boolean attachedToPaddle;
 	
 	public BallWorld(Stage stage, Breakout b) {
 		setPrefSize(640, 400);
@@ -31,6 +42,7 @@ public class BallWorld extends World{
 		levelWorld = new Level(this, level);
 		this.stage = stage;
 		breakout = b;
+		attachedToPaddle = true;
 	}
 	
 	public BallWorld(int level, Stage stage, Breakout b) {
@@ -43,13 +55,14 @@ public class BallWorld extends World{
 	
 	@Override
 	public void onDimensionsInitialized() {
-		Ball ball = new Ball();
-		ball.move(this.getWidth()/2, this.getHeight()/2);
-		add(ball);
-		
+		win = false;
 		paddle = new Paddle();
 		paddle.move(this.getWidth()/2, this.getHeight()*4/5);
 		add(paddle);
+		
+		ball = new Ball();
+		ball.move(paddle.getX()+paddle.getWidth()/2-ball.getWidth()/2-ball.getX(), paddle.getY()-ball.getHeight()-ball.getY());
+		add(ball);
 		
 		
 		
@@ -60,9 +73,16 @@ public class BallWorld extends World{
 		}*/
 		
 		score = new Score();
-		score.setX(this.getWidth()/2-score.getBoundsInParent().getWidth()/2);
+		score.setX(this.getWidth()/2-score.getBoundsInParent().getWidth()/2-100);
 		score.setY(score.getBoundsInParent().getHeight());
 		getChildren().add(score);
+		
+		lives = new Lives();
+		lives.setX(this.getWidth()/2-lives.getBoundsInParent().getWidth()/2+100);
+		lives.setY(lives.getBoundsInParent().getHeight());
+		lives.setLivesVal(3);
+		getChildren().add(lives);
+		
 		
 		setOnMouseMoved(new EventHandler<MouseEvent>() {
 
@@ -72,40 +92,110 @@ public class BallWorld extends World{
 			}
 		
 		});
-		
+		livesNum = lives.getLivesVal(); 
 		start();
+		isPaused = true;
+		setOnMouseClicked(e ->{
+			if(e.getButton()==MouseButton.PRIMARY) {
+				isPaused = !isPaused;
+				System.out.println(isPaused);
+				attachedToPaddle = false;
+			}
+		});
 	}
 
 	public Score getScore() {
 		return score;
 	}
 	
+	public Lives getLives() {
+		return lives;
+	}
+	
 	@Override
 	public void act(long now) {
-		// TODO Auto-generated method stub
-		if(isKeyPressed(KeyCode.LEFT)) {
-			paddle.move(-3,0);
-		}else if(isKeyPressed(KeyCode.RIGHT)) {
-			paddle.move(3, 0);
-		}
-
-		if(getObjects(Brick.class).size()==0) {
-			level++;
-			
-			try {
-				levelWorld.load(new File("level"+level+".xt"), this );
-			} catch (Exception e) {
-				breakout.setTitle();
-				stop();
-				score.setScoreVal(0);
-				level = 0;
+		if(isPaused) {
+		}else {
+			if(getLives().getLivesVal()<=0) {
+				endGame();
 			}
 			
+			if(livesNum != lives.getLivesVal()) {
+				if(ball.getDisplacement()[1]>0) {
+					ball.setDy(ball.getDisplacement()[1]*-1);
+				}
+				livesNum = lives.getLivesVal();
+				ball.move(paddle.getX()+paddle.getWidth()/2-ball.getWidth()/2-ball.getX(), paddle.getY()-ball.getHeight()-ball.getY());
+				isPaused = true;
+				attachedToPaddle = true;
+				return;
+			}
+		// TODO Auto-generated methodstub
+			if(isKeyPressed(KeyCode.LEFT)) {
+				paddle.move(-3,0);
+			}else if(isKeyPressed(KeyCode.RIGHT)) {
+				paddle.move(3, 0);
+			}
+			
+			
+			
+			if(getObjects(Brick.class).size()==0) {
+				level++;
+				isPaused = true;
+				attachedToPaddle = true;
+				try {
+					ball.randomize();
+					ball.move(paddle.getX()+paddle.getWidth()/2-ball.getWidth()/2-ball.getX(), paddle.getY()-ball.getHeight()-ball.getY());
+					levelWorld.load(new File("level"+level+".txt"), this );
+				
+				} catch (Exception e) {
+					win = true;
+					endGame();
+				}
+				
+			}
+			
+		}
+		
+		if(isKeyPressed(KeyCode.SPACE)) {
+			
+			isPaused = !isPaused;
+			attachedToPaddle = false;
+		}
+		
+		if(attachedToPaddle) {
+			ball.move(paddle.getX()+paddle.getWidth()/2-ball.getWidth()/2-ball.getX(), paddle.getY()-ball.getHeight()-ball.getY());
 		}
 		
 	}
 	
 	public void clear() {
 		levelWorld.clear();
+	}
+	
+	public boolean isGamePaused() {
+		return isPaused;
+	}
+	
+	public void setGamePaused(boolean b) {
+		isPaused = b;
+	}
+	
+	private void endGame() {
+		isPaused = true;
+		Alert end;
+		if(win) {
+			end = new Alert(AlertType.INFORMATION, "You Win!!");
+		}else {
+			end = new Alert(AlertType.INFORMATION, "You Lose :(");
+		}
+		end.show();
+		end.setOnCloseRequest(e ->{
+			breakout.setTitle();
+			score.setScoreVal(0);
+			level = 0;
+			ball.move(paddle.getX()+paddle.getWidth()/2-ball.getWidth()/2-ball.getX(), paddle.getY()-ball.getHeight()-ball.getY());
+			win = false;
+		});
 	}
 }

@@ -19,8 +19,10 @@ public class TitleScreen extends World{
 	private Button playButton;
 	private BorderPane root;
 	private Breakout b;
+	private BallWorld ball;
 	
-	public TitleScreen(Breakout b) {
+	public TitleScreen(Breakout b, BallWorld ball) {
+		this.ball = ball;
 		setPrefSize(640, 400);
 		playButton = new Button("New Game");
 		root = new BorderPane();
@@ -40,7 +42,9 @@ public class TitleScreen extends World{
 		getChildren().add(root);
 		
 		playButton.setOnAction(e -> {
-		b.setLevel(1);
+			b.setLevel(1);
+			ball.getLives().setLivesVal(3);
+			ball.setGamePaused(true);
 		});
 	}
 

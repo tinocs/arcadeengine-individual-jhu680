@@ -32,12 +32,13 @@ public class Breakout extends Application{
 		this.stage = stage;
 		stage.setResizable(false);
 		
+		world = new BallWorld(stage, this);
 		
 		BorderPane root = new BorderPane();
-		titleStage = new TitleScreen(this);
+		titleStage = new TitleScreen(this, world);
 		root.setCenter(titleStage);
 		
-		world = new BallWorld(stage, this);
+		
 		//root.setCenter(world);
 		
 		levelStage= new Level(world);
@@ -52,7 +53,7 @@ public class Breakout extends Application{
 		this.level = level;
 		try {
 			world.clear();
-			levelStage.load(new File("level"+level+".txt"), world);
+			levelStage.load(new File("test.txt"), world);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -68,5 +69,6 @@ public class Breakout extends Application{
 	
 	public void setTitle() {
 		stage.setScene(titleScene);
+		level = 0;
 	}
 }

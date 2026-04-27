@@ -19,57 +19,72 @@ public class Ball extends Actor{
 	
 	public Ball() {
 		setImage(new Image(BALL_IMAGE_PATH));
-		dx = Math.random()*4+5;
-		dy = Math.random()*4+5;
+		dx = (Math.random()*4+3);
+		dy = -(Math.random()*4+3);
 	}
 	
+	public double[] getDisplacement() {
+		return new double[] {dx,dy};
+	}
+	
+	public void setDy(double dy) {
+		this.dy = dy;
+	}
+	
+	public void randomize() {
+		dx = (Math.random()*4+3);
+		dy = -(Math.random()*4+3);
+	}
 	
 	@Override
 	public void act(long now) {
-		
-		move(dx, dy);
-		
-		if(getX()<=0||getX()+getWidth()>=getWorld().getWidth()) {
-			dx *=-1;
-			if(getX()<=0) {
-				move(-getX(),0);
-			}else {
-				move(getX()-getWorld().getWidth(),0);
+		if(((BallWorld)getWorld()).isGamePaused()){
+			
+		}else {
+			move(dx, dy);
+			
+			if(getX()<=0||getX()+getWidth()>=getWorld().getWidth()) {
+				dx *=-1;
+				if(getX()<=0) {
+					move(-getX(),0);
+				}else {
+					move(getX()-getWorld().getWidth(),0);
+				}
+				
 			}
 			
-		}
-		
-		if(getY()<=0||getY()+getHeight()>=getWorld().getHeight()) {
-			dy *=-1;
-			
-			if(getY()<=0) {
-				move(0,-getY());
-			}else {
-				move(0,getY()-getWorld().getHeight());
-				((BallWorld)getWorld()).getScore().setScoreVal(((BallWorld)getWorld()).getScore().getScoreVal()-1000);
+			if(getY()<=0||getY()+getHeight()>=getWorld().getHeight()) {
+				dy *=-1;
+				
+				if(getY()<=0) {
+					move(0,-getY());
+				}else {
+					move(0,getY()-getWorld().getHeight());
+					((BallWorld)getWorld()).getScore().setScoreVal(((BallWorld)getWorld()).getScore().getScoreVal()-1000);
+					((BallWorld)getWorld()).getLives().setLivesVal(((BallWorld)getWorld()).getLives().getLivesVal()-1);
+				}
 			}
-		}
-		
-		if(this.getOneIntersectingObject(Paddle.class)!=null) {
-			dy*=-1;
-		}
-		Brick brick = this.getOneIntersectingObject(Brick.class);
-		if(brick != null) {
-			if(getX()+getWidth()/2>brick.getX()&&getX()+getWidth()/2<brick.getX()+brick.getWidth()) {
+			
+			if(this.getOneIntersectingObject(Paddle.class)!=null) {
 				dy*=-1;
 			}
-			if(getY()+getHeight()/2>brick.getY()&&getY()+getHeight()/2<brick.getY()+brick.getWidth()) {
-				dx*=-1;
+			Brick brick = this.getOneIntersectingObject(Brick.class);
+			if(brick != null) {
+				if(getX()+getWidth()/2>brick.getX()&&getX()+getWidth()/2<brick.getX()+brick.getWidth()) {
+					dy*=-1;
+				}
+				if(getY()+getHeight()/2>brick.getY()&&getY()+getHeight()/2<brick.getY()+brick.getWidth()) {
+					dx*=-1;
+				}
+				((BallWorld)getWorld()).getScore().setScoreVal(((BallWorld)getWorld()).getScore().getScoreVal()+100);
+				brick.setStrength(brick.getStrength()-1);
+				if(brick.getStrength() <= 0) {
+					getWorld().remove(brick);
+				}
 			}
-			((BallWorld)getWorld()).getScore().setScoreVal(((BallWorld)getWorld()).getScore().getScoreVal()+100);
-			brick.setStrength(brick.getStrength()-1);
-			if(brick.getStrength() <= 0) {
-				getWorld().remove(brick);
-			}
+			
+		
 		}
-		
-		
-		
 	}
 
 }
