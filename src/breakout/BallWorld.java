@@ -8,6 +8,7 @@ package breakout;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import engine.Sound;
 import engine.World;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -35,6 +36,9 @@ public class BallWorld extends World{
 	private boolean isPaused;
 	private int livesNum;
 	private boolean attachedToPaddle;
+	private Sound soundLife;
+	private Sound soundLost;
+	private Sound soundWon;
 	
 	public BallWorld(Stage stage, Breakout b) {
 		setPrefSize(640, 400);
@@ -43,6 +47,9 @@ public class BallWorld extends World{
 		this.stage = stage;
 		breakout = b;
 		attachedToPaddle = true;
+		soundLife = new Sound("breakoutresources/lose_life.wav");
+		soundLost = new Sound("breakoutresources/game_lost.wav");
+		soundWon = new Sound("breakoutresources/game_won.wav");
 	}
 	
 	public BallWorld(int level, Stage stage, Breakout b) {
@@ -98,7 +105,6 @@ public class BallWorld extends World{
 		setOnMouseClicked(e ->{
 			if(e.getButton()==MouseButton.PRIMARY) {
 				isPaused = !isPaused;
-				System.out.println(isPaused);
 				attachedToPaddle = false;
 			}
 		});
@@ -121,6 +127,9 @@ public class BallWorld extends World{
 			}
 			
 			if(livesNum != lives.getLivesVal()) {
+				if(livesNum!=0) {
+					soundLife.play();
+				}
 				if(ball.getDisplacement()[1]>0) {
 					ball.setDy(ball.getDisplacement()[1]*-1);
 				}
@@ -186,8 +195,10 @@ public class BallWorld extends World{
 		Alert end;
 		if(win) {
 			end = new Alert(AlertType.INFORMATION, "You Win!!");
+			soundWon.play();
 		}else {
 			end = new Alert(AlertType.INFORMATION, "You Lose :(");
+			soundLost.play();
 		}
 		end.show();
 		end.setOnCloseRequest(e ->{

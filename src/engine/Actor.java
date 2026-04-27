@@ -56,6 +56,8 @@ public abstract class Actor extends ImageView{
 		return null;
 	}
 	
+	public void playSound(){}
+	
 	public void addedToWorld() {}
 	
 	public abstract void act(long now);

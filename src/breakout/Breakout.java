@@ -21,6 +21,7 @@ public class Breakout extends Application{
 	private BallWorld world;
 	private Scene titleScene;
 	
+	
 	public static void main(String[] args) {
 		launch();
 	}
@@ -53,7 +54,7 @@ public class Breakout extends Application{
 		this.level = level;
 		try {
 			world.clear();
-			levelStage.load(new File("test.txt"), world);
+			levelStage.load(new File("level"+level+".txt"), world);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
