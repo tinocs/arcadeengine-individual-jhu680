@@ -19,8 +19,8 @@ public class Ball extends Actor{
 	
 	public Ball() {
 		setImage(new Image(BALL_IMAGE_PATH));
-		dx = Math.random()*4+3;
-		dy = Math.random()*4+3;
+		dx = Math.random()*4+5;
+		dy = Math.random()*4+5;
 	}
 	
 	
@@ -62,7 +62,10 @@ public class Ball extends Actor{
 				dx*=-1;
 			}
 			((BallWorld)getWorld()).getScore().setScoreVal(((BallWorld)getWorld()).getScore().getScoreVal()+100);
-			getWorld().remove(brick);
+			brick.setStrength(brick.getStrength()-1);
+			if(brick.getStrength() <= 0) {
+				getWorld().remove(brick);
+			}
 		}
 		
 		

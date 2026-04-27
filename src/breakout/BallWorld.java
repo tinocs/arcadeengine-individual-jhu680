@@ -14,6 +14,7 @@ import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
 
 public class BallWorld extends World{
@@ -21,21 +22,27 @@ public class BallWorld extends World{
 	private Score score;
 	private int level;
 	private Level levelWorld;
+	private Stage stage;
+	private Breakout breakout;
 	
-	public BallWorld() {
+	public BallWorld(Stage stage, Breakout b) {
 		setPrefSize(640, 400);
+		level = 1;
+		levelWorld = new Level(this, level);
+		this.stage = stage;
+		breakout = b;
 	}
 	
-	public BallWorld(int level) {
-		this();
+	public BallWorld(int level, Stage stage, Breakout b) {
+		this(stage, b);
 		this.level = level;
-		levelWorld = new Level(this, level);
+		this.stage = stage;
+		//levelWorld = new Level(this, level);
 	}
 	
 	
 	@Override
 	public void onDimensionsInitialized() {
-		
 		Ball ball = new Ball();
 		ball.move(this.getWidth()/2, this.getHeight()/2);
 		add(ball);
@@ -44,9 +51,7 @@ public class BallWorld extends World{
 		paddle.move(this.getWidth()/2, this.getHeight()*4/5);
 		add(paddle);
 		
-		try {
-			levelWorld.load(new File("level1.txt"), this);
-		} catch (Exception e) { System.out.println("jerer");}
+		
 		
 		/*for(int i = 0;i<5;i++) {
 			Brick brick = new Brick();
@@ -67,8 +72,6 @@ public class BallWorld extends World{
 			}
 		
 		});
-		System.out.println();
-		
 		
 		start();
 	}
@@ -85,7 +88,24 @@ public class BallWorld extends World{
 		}else if(isKeyPressed(KeyCode.RIGHT)) {
 			paddle.move(3, 0);
 		}
+
+		if(getObjects(Brick.class).size()==0) {
+			level++;
+			
+			try {
+				levelWorld.load(new File("level"+level+".xt"), this );
+			} catch (Exception e) {
+				breakout.setTitle();
+				stop();
+				score.setScoreVal(0);
+				level = 0;
+			}
+			
+		}
 		
 	}
-
+	
+	public void clear() {
+		levelWorld.clear();
+	}
 }

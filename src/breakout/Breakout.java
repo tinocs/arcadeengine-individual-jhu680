@@ -5,6 +5,9 @@
  */
 
 package breakout;
+import java.io.File;
+import java.io.FileNotFoundException;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -16,6 +19,7 @@ public class Breakout extends Application{
 	private Stage stage;
 	private TitleScreen titleStage;
 	private BallWorld world;
+	private Scene titleScene;
 	
 	public static void main(String[] args) {
 		launch();
@@ -23,7 +27,7 @@ public class Breakout extends Application{
 	
 	@Override
 	public void start(Stage stage) throws Exception {
-		level = 0;
+		level = -1;
 		stage.setTitle("Ball bounce!");
 		this.stage = stage;
 		stage.setResizable(false);
@@ -33,27 +37,36 @@ public class Breakout extends Application{
 		titleStage = new TitleScreen(this);
 		root.setCenter(titleStage);
 		
-		world = new BallWorld();
+		world = new BallWorld(stage, this);
 		//root.setCenter(world);
 		
-		Level level = new Level(world);
+		levelStage= new Level(world);
 		//root.setCenter(level);
-		Scene scene = new Scene(root);
-		stage.setScene(scene);
+		titleScene = new Scene(root);
+		stage.setScene(titleScene);
 		stage.show();
-		
 		
 	}
 	
 	public void setLevel(int level) {
 		this.level = level;
-		levelStage = new Level(world, level);
+		try {
+			world.clear();
+			levelStage.load(new File("level"+level+".txt"), world);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		BorderPane root = new BorderPane();
-		BallWorld world = new BallWorld();
+		world.clear();
 		root.setCenter(world);
 		
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
-		stage.show();
+		//stage.show();
+	}
+	
+	public void setTitle() {
+		stage.setScene(titleScene);
 	}
 }

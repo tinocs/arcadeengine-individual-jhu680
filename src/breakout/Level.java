@@ -39,6 +39,7 @@ public class Level extends World{
 	public Level(BallWorld world) {
 		setPrefSize(640, 400);
 		level = -1;
+		grid = new int[20][20];
 		this.world = world;
 	}
 	
@@ -52,9 +53,8 @@ public class Level extends World{
 	public void onDimensionsInitialized() {
 		//level builder
 		if(level == -1) {
-			grid = new int[20][20];
+			//grid = new int[20][20];
 			Line line = new Line(0,getHeight()*4/5,getWidth(),getHeight()*4/5);
-			world.getChildren().add(line);
 			setOnMouseClicked(new EventHandler<MouseEvent>(){
 				
 				@Override
@@ -100,8 +100,7 @@ public class Level extends World{
 							
 						} catch (Exception c) {}
 					}else if(e.getCode() == KeyCode.C) {
-						grid = new int[grid.length][grid[0].length];
-						updateScreen();
+						clear();
 					}
 				}
 				
@@ -215,5 +214,10 @@ public class Level extends World{
 	public void act(long now) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void clear() {
+		grid = new int[grid.length][grid[0].length];
+		updateScreen();
 	}
 }

@@ -39,8 +39,9 @@ public class TitleScreen extends World{
 		root.setCenter(playButton);
 		getChildren().add(root);
 		
-		playButton.setOnAction(e -> b.setLevel(1));
-		
+		playButton.setOnAction(e -> {
+		b.setLevel(1);
+		});
 	}
 
 	@Override
