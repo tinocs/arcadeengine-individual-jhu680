@@ -8,12 +8,14 @@ package breakout;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import engine.Actor;
 import engine.Sound;
 import engine.World;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.ImageView;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
@@ -39,6 +41,10 @@ public class BallWorld extends World{
 	private Sound soundLife;
 	private Sound soundLost;
 	private Sound soundWon;
+	private ImageView bg;
+	private boolean scrolling;
+	private final String BG_URL = getClass().getClassLoader().getResource("breakoutresources/background.png").toString();
+	
 	
 	public BallWorld(Stage stage, Breakout b) {
 		setPrefSize(640, 400);
@@ -50,7 +56,11 @@ public class BallWorld extends World{
 		soundLife = new Sound("breakoutresources/lose_life.wav");
 		soundLost = new Sound("breakoutresources/game_lost.wav");
 		soundWon = new Sound("breakoutresources/game_won.wav");
+		bg = new ImageView(BG_URL);
+		bg.setX((getWidth()-bg.getBoundsInParent().getWidth())/4);
+		getChildren().add(bg);
 	}
+	
 	
 	public BallWorld(int level, Stage stage, Breakout b) {
 		this(stage, b);
@@ -63,9 +73,11 @@ public class BallWorld extends World{
 	@Override
 	public void onDimensionsInitialized() {
 		win = false;
+		scrolling = false;
 		paddle = new Paddle();
 		paddle.move(this.getWidth()/2, this.getHeight()*4/5);
 		add(paddle);
+		
 		
 		ball = new Ball();
 		ball.move(paddle.getX()+paddle.getWidth()/2-ball.getWidth()/2-ball.getX(), paddle.getY()-ball.getHeight()-ball.getY());
@@ -120,6 +132,33 @@ public class BallWorld extends World{
 	
 	@Override
 	public void act(long now) {
+		if(livesNum!=0) {
+			if(isKeyPressed(KeyCode.LEFT)) {
+				if(!scrolling) {
+					paddle.move(-3,0);
+					
+				}else {
+					for(Actor obj: getObjects(Actor.class)) {
+						if(!obj.equals(paddle)) {
+							obj.move(3,0);
+						}
+						
+					}
+				}
+				scroll(-3);
+			}else if(isKeyPressed(KeyCode.RIGHT)) {
+				if(!scrolling) {
+					paddle.move(3,0);
+				}else {
+					for(Actor obj: getObjects(Actor.class)) {
+						if(!obj.equals(paddle)) {
+							obj.move(-3,0);
+						}
+					}
+				}
+				scroll(3);
+			}
+		}
 		if(isPaused) {
 		}else {
 			if(getLives().getLivesVal()<=0) {
@@ -140,11 +179,6 @@ public class BallWorld extends World{
 				return;
 			}
 		// TODO Auto-generated methodstub
-			if(isKeyPressed(KeyCode.LEFT)) {
-				paddle.move(-3,0);
-			}else if(isKeyPressed(KeyCode.RIGHT)) {
-				paddle.move(3, 0);
-			}
 			
 			
 			
@@ -167,7 +201,6 @@ public class BallWorld extends World{
 		}
 		
 		if(isKeyPressed(KeyCode.SPACE)) {
-			
 			isPaused = !isPaused;
 			attachedToPaddle = false;
 		}
@@ -208,5 +241,21 @@ public class BallWorld extends World{
 			ball.move(paddle.getX()+paddle.getWidth()/2-ball.getWidth()/2-ball.getX(), paddle.getY()-ball.getHeight()-ball.getY());
 			win = false;
 		});
+	}
+	
+	public void scroll(double dx) {
+		scrolling = true;
+		//System.out.println(bg.getBoundsInParent().getWidth()+", "+getWidth()+", "+(bg.getBoundsInParent().getWidth()-getWidth()));
+		double rem = -bg.getBoundsInParent().getWidth()+(getWidth()-bg.getBoundsInParent().getWidth())/4;
+		if(bg.getX()<=0&&bg.getX()>=-(bg.getBoundsInParent().getWidth()-getWidth())) {
+			bg.setX(bg.getX()-dx);
+			if(bg.getX()>0) {
+				bg.setX(0.0);
+				scrolling = false;
+			}else if(bg.getX()<-(bg.getBoundsInParent().getWidth()-getWidth())){
+				bg.setX(-(bg.getBoundsInParent().getWidth()-getWidth()));
+				scrolling = false;
+			}
+		}
 	}
 }

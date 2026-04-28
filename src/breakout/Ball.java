@@ -35,6 +35,18 @@ public class Ball extends Actor{
 		this.dy = dy;
 	}
 	
+	public double getDx() {
+		return dx;
+	}
+
+	public void setDx(double dx) {
+		this.dx = dx;
+	}
+
+	public double getDy() {
+		return dy;
+	}
+	
 	public void randomize() {
 		dx = (Math.random()*4+3);
 		dy = -(Math.random()*4+3);
@@ -53,7 +65,7 @@ public class Ball extends Actor{
 				if(getX()<=0) {
 					move(-getX(),0);
 				}else {
-					move(getX()-getWorld().getWidth(),0);
+					move(-(getX()+getWidth()-getWorld().getWidth()),0);
 				}
 				
 			}
@@ -64,7 +76,7 @@ public class Ball extends Actor{
 				if(getY()<=0) {
 					move(0,-getY());
 				}else {
-					move(0,getY()-getWorld().getHeight());
+					move(0,-(getY()+getHeight()-getWorld().getHeight()));
 					((BallWorld)getWorld()).getScore().setScoreVal(((BallWorld)getWorld()).getScore().getScoreVal()-1000);
 					((BallWorld)getWorld()).getLives().setLivesVal(((BallWorld)getWorld()).getLives().getLivesVal()-1);
 				}

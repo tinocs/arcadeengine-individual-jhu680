@@ -20,8 +20,14 @@ public class Paddle extends Actor{
 	
 	@Override
 	public void act(long now) {
-		// TODO Auto-generated method stub
-		
+		if(getX()<=0||getX()+getWidth()>=getWorld().getWidth()) {
+			if(getX()<=0) {
+				move(-getX(),0);
+			}else {
+				move(-(getX()+getWidth()-getWorld().getWidth()),0);
+			}
+			
+		}
 	}
 
 }
